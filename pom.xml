@@ -43,7 +43,7 @@
 		<repository>
 			<id>github</id>
 			<name>Packages</name>
-			<url>https://maven.pkg.github.com/rtdi/AppContainer</url>
+			<url>https://maven.pkg.github.com/rtdi/AppContainerRealm</url>
 		</repository>
 	</distributionManagement>
 	<build>
