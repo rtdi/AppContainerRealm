@@ -26,8 +26,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-		<finalName>appcontainerrealm</finalName>
 	<build>
+		<finalName>appcontainerrealm</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
