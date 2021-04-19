@@ -26,6 +26,26 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo1.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/rtdi/*</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>Packages</name>
+			<url>https://maven.pkg.github.com/rtdi/AppContainer</url>
+		</repository>
+	</distributionManagement>
 	<build>
 		<finalName>appcontainerrealm</finalName>
 		<plugins>
