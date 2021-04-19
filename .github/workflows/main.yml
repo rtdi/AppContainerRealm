@@ -53,6 +53,6 @@ jobs:
         asset_content_type: application/jar
 
     - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      run: mvn -DskipTests=true --no-transfer-progress -s $GITHUB_WORKSPACE/settings.xml deploy
       env:
         GITHUB_TOKEN: ${{ github.token }}
