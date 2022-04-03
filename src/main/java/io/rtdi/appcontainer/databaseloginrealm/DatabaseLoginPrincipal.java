@@ -29,7 +29,7 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 	 * @param password database password
 	 * @param jdbcurl database JDBC connection URL
 	 * @param jdbcdriver class name of the JDBC driver to use
-	 * @param roleSQL a select with a single string column containing all database roles assigned to that user
+	 * @param roleSql a select with a single string column containing all database roles assigned to that user
 	 * @throws SQLException in case the login sequence cannot be performed completely
 	 */
 	public DatabaseLoginPrincipal(String name, String password, String jdbcurl, String jdbcdriver, String roleSql) throws SQLException {
@@ -166,21 +166,21 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 	 *  
 	 * @param c a JDBC connection to retrieve the data
 	 * @return a text with maybe a HTML link or null
-	 * @throws SQLException
+	 * @throws LoginSQLException in case of SQL errors
 	 */
 	public abstract Optional<String> validateLogin(Connection c) throws LoginSQLException;
 	
 	/**
 	 * @param c a JDBC connection to retrieve the data
 	 * @return a string indicating the connected database version
-	 * @throws SQLException
+	 * @throws LoginSQLException in case of SQL errors
 	 */
 	public abstract String readDatabaseVersion(Connection c) throws LoginSQLException;
 	
 	/**
 	 * @param c a JDBC connection to retrieve the data
 	 * @return the exact username as known by the database, e.g. the login was 'user1' but the actual user name is 'USER1'
-	 * @throws SQLException
+	 * @throws LoginSQLException in case of SQL errors
 	 */
 	public abstract String readExactUserName(Connection c) throws LoginSQLException;
 }

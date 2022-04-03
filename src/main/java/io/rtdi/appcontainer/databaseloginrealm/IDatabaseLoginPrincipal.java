@@ -16,7 +16,7 @@ public interface IDatabaseLoginPrincipal {
 	 * Call the Tomcat's DataSource getConnection() method to retrieve a currently idle connection from the pool.
 	 * 
 	 * @return a JDBC connection from the pool for temporary use
-	 * @throws SQLException
+	 * @throws SQLException in case the connection cannot be established
 	 */
 	Connection getConnection() throws SQLException;
 
