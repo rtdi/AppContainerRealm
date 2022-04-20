@@ -183,4 +183,12 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 	 * @throws LoginSQLException in case of SQL errors
 	 */
 	public abstract String readExactUserName(Connection c) throws LoginSQLException;
+
+	@Override
+	public void logout() throws Exception {
+		if (pool != null) {
+			pool.close();
+		}
+		super.logout();
+	}
 }
