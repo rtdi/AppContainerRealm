@@ -55,6 +55,10 @@ public interface IDatabaseLoginPrincipal {
 	 */
 	Optional<String> getLoginWarnings();
 	
+	/**
+	 * Logout and disconnect
+	 * @throws Exception in case of any error
+	 */
 	void logout() throws Exception;
 	
 }

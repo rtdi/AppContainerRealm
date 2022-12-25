@@ -13,15 +13,37 @@ import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
+/**
+ * @author werne
+ *
+ */
 public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements IDatabaseLoginPrincipal {
 
 	private static final long serialVersionUID = 486703493493L;
 	private String version;
+	/**
+	 * database username
+	 */
 	private String user;
+	/**
+	 * Optional information about login warnings like must-change-password
+	 */
 	private Optional<String> loginwarnings;
+	/**
+	 * Tomcat jdbc connection pool
+	 */
 	private DataSource pool;
+	/**
+	 * The real database schema connected to
+	 */
 	private String schema;
+	/**
+	 * The jdbc driver version used
+	 */
 	private String driverversion;
+	/**
+	 * The jdbc driver name used
+	 */
 	private String jdbcdriver; 
 
 	/**
