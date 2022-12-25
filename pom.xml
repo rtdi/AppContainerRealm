@@ -6,7 +6,7 @@
 	<artifactId>appcontainerrealm</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Tomcat Realm</description>
-	<version>0.9.4</version>
+	<version>0.9.5</version>
 	<packaging>jar</packaging>
 	<url>https://www.rtdi.io/</url>
 	<scm>
@@ -38,7 +38,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tomcatversion>10.0.13</tomcatversion>
-		<log4j.version>2.17.1</log4j.version>
+		<log4j.version>2.19.0</log4j.version>
 	</properties>
 	<build>
 		<finalName>${project.artifactId}</finalName>
