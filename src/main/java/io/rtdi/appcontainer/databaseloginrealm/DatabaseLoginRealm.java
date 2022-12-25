@@ -17,10 +17,22 @@ import org.apache.juli.logging.LogFactory;
  *
  */
 public abstract class DatabaseLoginRealm extends RealmBase {
+    /**
+     * Juli logging of Tomcat
+     */
     protected final Log log;
+    /**
+     * Database jdbcurl
+     */
     private String jdbcurl;
+    /**
+     * Map with all connected users and their Tomcat principals
+     */
     private Map<String, Principal> userdirectory = new HashMap<>();
 
+	/**
+	 * Creates a new DatabaseLoginRealm for Tomcat
+	 */
 	public DatabaseLoginRealm() {
 		log = LogFactory.getLog(this.getClass());
 	}
@@ -48,6 +60,14 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 		}
 	}
 	
+	/**
+	 * Create a new realm for the provided database user
+	 * @param username of the db
+	 * @param credentials pasword
+	 * @param jdbcurl of the connected database
+	 * @return the Tomcat principal
+	 * @throws SQLException in case of an error
+	 */
 	protected abstract Principal createNewPrincipal(String username, String credentials, String jdbcurl) throws SQLException;
 	
 	/**
