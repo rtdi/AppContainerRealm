@@ -11,6 +11,9 @@ import java.sql.SQLException;
 public class LoginSQLException extends SQLException {
 
 	private static final long serialVersionUID = 7144234468537929847L;
+	/**
+	 * SQL text causing the exception
+	 */
 	private String sql;
 	
 	/**

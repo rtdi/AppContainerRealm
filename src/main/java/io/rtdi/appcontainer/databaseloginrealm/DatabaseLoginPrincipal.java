@@ -20,6 +20,9 @@ import org.apache.tomcat.jdbc.pool.PoolProperties;
 public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements IDatabaseLoginPrincipal {
 
 	private static final long serialVersionUID = 486703493493L;
+	/**
+	 * Version of the connected database
+	 */
 	private String version;
 	/**
 	 * database username
