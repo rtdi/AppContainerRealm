@@ -5,7 +5,7 @@
     <artifactId>appcontainerrealm</artifactId>
     <version>0.9.5</version>
   </parent>
-  <artifactId>hanadbrealm</artifactId>
+  <artifactId>hanarealm</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>io.rtdi.appcontainer</groupId>
