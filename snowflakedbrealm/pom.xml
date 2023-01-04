@@ -5,7 +5,7 @@
     <artifactId>appcontainerrealm</artifactId>
     <version>0.9.5</version>
   </parent>
-  <artifactId>snowflakedbrealm</artifactId>
+  <artifactId>snowflakerealm</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>io.rtdi.appcontainer</groupId>
