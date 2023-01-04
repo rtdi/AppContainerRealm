@@ -7,25 +7,6 @@ on:
       - main
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v3
-
-      - name: Install Java and Maven
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: 'temurin'
-
-      - name: Release Maven package
-        uses: samuelmeuli/action-maven-publish@v1
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          nexus_username: ${{ secrets.OSSRH_USERNAME }}
-          nexus_password: ${{ secrets.OSSRH_TOKEN }}
   build:
     name: Build and Release 
     runs-on: ubuntu-latest
@@ -59,4 +40,13 @@ jobs:
         prerelease: false
         automatic_release_tag: latest
         files: |
-          target/appcontainerrealm.jar
+          dbrealmbase/target/dbrealmbase.jar
+          hanarealm/target/hanarealm.jar
+          snowflakerealm/target/snowflakerealm.jar
+    - name: Release Maven package
+      uses: samuelmeuli/action-maven-publish@v1
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        nexus_username: ${{ secrets.OSSRH_USERNAME }}
+        nexus_password: ${{ secrets.OSSRH_TOKEN }}
