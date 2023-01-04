@@ -3,14 +3,14 @@
   <parent>
     <groupId>io.rtdi.appcontainer</groupId>
     <artifactId>appcontainerrealm</artifactId>
-    <version>0.9.5</version>
+    <version>${revision}</version>
   </parent>
   <artifactId>snowflakerealm</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>io.rtdi.appcontainer</groupId>
   		<artifactId>dbrealmbase</artifactId>
-  		<version>${realmversion}</version>
+  		<version>${revision}</version>
   	</dependency>
   </dependencies>
 </project>

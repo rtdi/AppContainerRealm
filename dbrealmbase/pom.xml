@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>appcontainerrealm</artifactId>
 		<groupId>io.rtdi.appcontainer</groupId>
-		<version>0.9.5</version>
+		<version>${revision}</version>
 	</parent>
 	<artifactId>dbrealmbase</artifactId>
 </project>
