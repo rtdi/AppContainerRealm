@@ -11,9 +11,14 @@ import org.apache.juli.logging.LogFactory;
 
 /**
  * There are two ways to set the jdbcurl
- * 1. In the server.xml as property &lt;Realm className="io.rtdi.appcontainer.snowflakerealm.SnowflakeRealm" 
+ * <OL>
+ * <LI>
+ * In the server.xml as property &lt;Realm className="io.rtdi.appcontainer.snowflakerealm.SnowflakeRealm" 
  *    JDBCURL="jdbc:snowflake://&lt;account_name&gt;.snowflakecomputing.com/?&lt;connection_params&gt;"/&gt;
- * 2. As environment variable called JDBCURL
+ * </LI><LI>
+ * As environment variable called JDBCURL
+ * </LI>
+ * </OL>
  *
  */
 public abstract class DatabaseLoginRealm extends RealmBase {
@@ -55,7 +60,7 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 			}
 			return principal;
 		} catch (SQLException e) {
-			log.error("failed to login with the provided credentials for \"" + username + "\" with database \"" + jdbcurl + "\" and exception " + e.getMessage());
+			log.error("failed to login with the provided credentials for \"" + username + "\" with jdbc connection string \"" + jdbcurl + "\" and exception " + e.getMessage());
 			return null;
 		}
 	}
@@ -63,7 +68,7 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 	/**
 	 * Create a new realm for the provided database user
 	 * @param username of the db
-	 * @param credentials pasword
+	 * @param credentials password
 	 * @param jdbcurl of the connected database
 	 * @return the Tomcat principal
 	 * @throws SQLException in case of an error
@@ -79,8 +84,8 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 	}
 
 	/**
-	 * Get the SnowflakePrincipal associated with the specified user
-	 * @return SnowflakePrincipal
+	 * Get the Principal associated with the specified user
+	 * @return Principal
 	 */
 	@Override
 	protected Principal getPrincipal(String username) {

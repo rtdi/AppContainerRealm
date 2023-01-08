@@ -1,13 +1,12 @@
 package io.rtdi.appcontainer.hanarealm;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
 import io.rtdi.appcontainer.databaseloginrealm.DatabaseLoginPrincipal;
 import io.rtdi.appcontainer.databaseloginrealm.LoginSQLException;
+import io.rtdi.appcontainer.databaseloginrealm.RoleProcessor;
 
 /**
  * The generic principal enriched with some additional information, e.g. the exact username (uppercase?) and the Hana database version.
@@ -21,42 +20,12 @@ public class HanaPrincipal extends DatabaseLoginPrincipal {
 	public static final String DBUSER_QUERY = "select current_user from dummy";
 
 	public HanaPrincipal(String name, String password, String jdbcurl) throws SQLException {
-		super(name, password, jdbcurl, JDBC_DRIVER, ROLE_QUERY);
+		super(name, password, jdbcurl, JDBC_DRIVER, ROLE_QUERY, new RoleProcessor(), DBVERSION_QUERY, DBUSER_QUERY);
 	}
 
 	@Override
 	public Optional<String> validateLogin(Connection c) throws LoginSQLException {
 		return Optional.empty();
-	}
-
-
-	@Override
-	public String readDatabaseVersion(Connection c) throws LoginSQLException {
-		try (PreparedStatement stmt = c.prepareStatement(DBVERSION_QUERY); ) {
-			ResultSet rs = stmt.executeQuery();
-			if (rs.next()) {
-				return rs.getString(1);
-			} else {
-				return "database version unknown";
-			}
-		} catch (SQLException e) {
-			throw new LoginSQLException("Failed to read the database version", e, DBVERSION_QUERY);
-		}
-	}
-
-
-	@Override
-	public String readExactUserName(Connection c) throws LoginSQLException {
-		try (PreparedStatement stmt = c.prepareStatement(DBUSER_QUERY); ) {
-			ResultSet rs = stmt.executeQuery();
-			if (rs.next()) {
-				return rs.getString(1);
-			} else {
-				return this.getName();
-			}
-		} catch (SQLException e) {
-			throw new LoginSQLException("Failed to read the database user", e, DBUSER_QUERY);
-		}
 	}
 
 }
