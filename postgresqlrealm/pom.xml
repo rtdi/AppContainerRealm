@@ -5,7 +5,7 @@
 		<artifactId>appcontainerrealm</artifactId>
 		<version>${revision}</version>
 	</parent>
-	<artifactId>snowflakerealm</artifactId>
+	<artifactId>postgresrealm</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>
@@ -13,9 +13,9 @@
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.snowflake</groupId>
-			<artifactId>snowflake-jdbc</artifactId>
-			<version>3.13.26</version>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.5.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

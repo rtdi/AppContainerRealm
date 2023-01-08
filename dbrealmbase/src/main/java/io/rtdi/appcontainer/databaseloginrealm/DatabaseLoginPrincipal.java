@@ -14,7 +14,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 /**
- * @author werne
+ * Validates the provided login data against the database and queries the database roles and other meta information
  *
  */
 public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements IDatabaseLoginPrincipal {
@@ -47,7 +47,7 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 	/**
 	 * The jdbc driver name used
 	 */
-	private String jdbcdriver; 
+	private String jdbcdriver;
 
 	/**
 	 * @param name database user name
@@ -55,11 +55,13 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 	 * @param jdbcurl database JDBC connection URL
 	 * @param jdbcdriver class name of the JDBC driver to use
 	 * @param roleSql a select with a single string column containing all database roles assigned to that user
+	 * @param versionSql a select statement executed to find the database version
+	 * @param currentuserSql a select statement executed to find the exact user name of the connected user
 	 * @throws SQLException in case the login sequence cannot be performed completely
 	 */
-	public DatabaseLoginPrincipal(String name, String password, String jdbcurl, String jdbcdriver, String roleSql) throws SQLException {
-		super(name, queryRoles(name, password, jdbcurl, jdbcdriver, roleSql)); // unfortunately there is no better way than that because of the Tomcat Principal constructor
-		pool = getDataSource(name, password, jdbcurl, jdbcdriver);
+	public DatabaseLoginPrincipal(String name, String password, String jdbcurl, String jdbcdriver, String roleSql, RoleProcessor processor, String versionSql, String currentuserSql) throws SQLException {
+		super(name, queryRoles(name, password, jdbcurl, jdbcdriver, roleSql, processor)); // unfortunately there is no better way than that because of the Tomcat Principal constructor
+		pool = getDataSource(name, password, jdbcurl, jdbcdriver, versionSql, currentuserSql);
 		this.jdbcdriver = jdbcdriver;
 	}
 
@@ -68,18 +70,23 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 	 * @param password database password
 	 * @param jdbcurl database JDBC connection URL
 	 * @param jdbcdriver class name of the JDBC driver to use
+	 * @param processor 
 	 * @param roleSQL a select with a single string column containing all database roles assigned to that user
 	 * @return the list of database role names the user has assigned, direct or indirect
 	 * @throws SQLException in case the roles cannot be read
 	 */
-	private static List<String> queryRoles(String name, String password, String jdbcurl, String jdbcdriver, String roleSql) throws SQLException {
+	private static List<String> queryRoles(String name, String password, String jdbcurl, String jdbcdriver, String roleSql, RoleProcessor processor) throws SQLException {
 		try (Connection c = getDatabaseConnection(name, password, jdbcurl, jdbcdriver)) {
 			try (PreparedStatement stmt = c.prepareStatement(roleSql); ) {
 				List<String> roles = new ArrayList<String>();
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
-					roles.add(rs.getString(1));
+					String rolename = processor.processRole(rs.getString(1));
+					if (rolename != null) {
+						roles.add(rolename);
+					}
 				}
+				roles.add("PUBLIC"); // an authenticated user is always part of the PUBLIC group
 				return roles;
 			} catch (SQLException e) {
 				throw new LoginSQLException(e, roleSql);
@@ -88,12 +95,8 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 	}
 	
 	private static Connection getDatabaseConnection(String user, String passwd, String jdbcurl, String jdbcdriver) throws SQLException {
-        try {
-            Class.forName(jdbcdriver);
-            return DriverManager.getConnection(jdbcurl, user, passwd);
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("No JDBC driver library found with name '" + jdbcdriver + "'");
-        }
+        // Class.forName(jdbcdriver);   No longer needed with all JDBC drivers
+		return DriverManager.getConnection(jdbcurl, user, passwd);
 	}
 
 	@Override
@@ -116,7 +119,7 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 		return loginwarnings;
 	}
 
-	private DataSource getDataSource(String name, String password, String jdbcurl, String jdbcdriver) throws SQLException {
+	private DataSource getDataSource(String name, String password, String jdbcurl, String jdbcdriver, String versionquery, String currentuserquery) throws SQLException {
 		DataSource datasource = null;
         PoolProperties p = new PoolProperties();
         p.setUrl(jdbcurl);
@@ -150,8 +153,8 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 		try (Connection c = datasource.getConnection()) {
 			this.schema = c.getSchema();
 			driverversion = c.getMetaData().getDriverVersion();
-			this.version = readDatabaseVersion(c);
-			this.user = readExactUserName(c);
+			this.version = readDatabaseVersion(c, versionquery);
+			this.user = readExactUserName(c, currentuserquery);
 			this.loginwarnings = validateLogin(c);
 		}		
         return datasource;
@@ -197,17 +200,41 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 	
 	/**
 	 * @param c a JDBC connection to retrieve the data
+	 * @param versionquery 
 	 * @return a string indicating the connected database version
 	 * @throws LoginSQLException in case of SQL errors
 	 */
-	public abstract String readDatabaseVersion(Connection c) throws LoginSQLException;
+	public String readDatabaseVersion(Connection c, String versionquery) throws LoginSQLException {
+		try (PreparedStatement stmt = c.prepareStatement(versionquery); ) {
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				return rs.getString(1);
+			} else {
+				return "database version unknown";
+			}
+		} catch (SQLException e) {
+			throw new LoginSQLException("Failed to read the database version", e, versionquery);
+		}
+	}
 	
 	/**
 	 * @param c a JDBC connection to retrieve the data
+	 * @param currentuserquery 
 	 * @return the exact username as known by the database, e.g. the login was 'user1' but the actual user name is 'USER1'
 	 * @throws LoginSQLException in case of SQL errors
 	 */
-	public abstract String readExactUserName(Connection c) throws LoginSQLException;
+	public String readExactUserName(Connection c, String currentuserquery) throws LoginSQLException {
+		try (PreparedStatement stmt = c.prepareStatement(currentuserquery); ) {
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				return rs.getString(1);
+			} else {
+				return this.getName();
+			}
+		} catch (SQLException e) {
+			throw new LoginSQLException("Failed to read the database user", e, currentuserquery);
+		}
+	}
 
 	@Override
 	public void logout() throws Exception {

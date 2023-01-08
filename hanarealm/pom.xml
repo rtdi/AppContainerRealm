@@ -1,16 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>io.rtdi.appcontainer</groupId>
-    <artifactId>appcontainerrealm</artifactId>
-    <version>${revision}</version>
-  </parent>
-  <artifactId>hanarealm</artifactId>
-  <dependencies>
-  	<dependency>
-  		<groupId>io.rtdi.appcontainer</groupId>
-  		<artifactId>dbrealmbase</artifactId>
-  		<version>${revision}</version>
-  	</dependency>
-  </dependencies>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.rtdi.appcontainer</groupId>
+		<artifactId>appcontainerrealm</artifactId>
+		<version>${revision}</version>
+	</parent>
+	<artifactId>hanarealm</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>dbrealmbase</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sap.cloud.db.jdbc</groupId>
+			<artifactId>ngdbc</artifactId>
+			<version>2.15.10</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
