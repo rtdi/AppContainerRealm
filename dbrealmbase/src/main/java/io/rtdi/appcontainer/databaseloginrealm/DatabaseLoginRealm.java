@@ -2,7 +2,9 @@ package io.rtdi.appcontainer.databaseloginrealm;
 
 import java.security.Principal;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.catalina.realm.RealmBase;
@@ -33,7 +35,7 @@ public abstract class DatabaseLoginRealm extends RealmBase {
     /**
      * Map with all connected users and their Tomcat principals
      */
-    private Map<String, Principal> userdirectory = new HashMap<>();
+    private Map<String, DatabaseLoginPrincipal> userdirectory = Collections.synchronizedMap(new HashMap<>());
 
 	/**
 	 * Creates a new DatabaseLoginRealm for Tomcat
@@ -44,6 +46,19 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 
 	@Override
 	public Principal authenticate(String username, String credentials) {
+		if (username == null || credentials == null) {
+			// If either one is missing, nothing can be done to auth the user
+			return null;
+		}
+		/*
+		 * For basic auth without database sessions, e.g. when using rest only, the authentication is called with every single request.
+		 * Hence it must be quick.
+		 */
+		DatabaseLoginPrincipal existingprincipal = getDatabaseLoginPrincipalPrincipal(username);
+		String serverCredentials = existingprincipal.getPassword();
+		if (getCredentialHandler().matches(credentials, serverCredentials)) {
+			return existingprincipal;
+		}
 		if (jdbcurl == null) {
 			jdbcurl = System.getenv("JDBCURL");
 			if (jdbcurl == null) {
@@ -51,20 +66,48 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 				return null;
 			}
 		}
-		log.debug("Authenticating user \"" + username + "\" with database \"" + jdbcurl + "\"");
 		try {
-			Principal principal = userdirectory.get(username);
-			if (principal == null ) { 
-				principal = createNewPrincipal(username, credentials, jdbcurl); // this does throw a SQLException in case the login data is invalid
-				userdirectory.put(username, principal);
-			}
+			DatabaseLoginPrincipal principal = createNewPrincipal(username, credentials, jdbcurl); // this does throw a SQLException in case the login data is invalid
+			userdirectory.put(username, principal);
 			return principal;
 		} catch (SQLException e) {
-			log.error("failed to login with the provided credentials for \"" + username + "\" with jdbc connection string \"" + jdbcurl + "\" and exception " + e.getMessage());
+            if (containerLog.isTraceEnabled()) {
+                containerLog.trace("failed to login with the provided credentials for \"" + username + "\" with jdbc connection string \"" + jdbcurl + "\" and exception " + e.getMessage());
+            }
 			return null;
 		}
 	}
 	
+	
+    /**
+     * Periodically logout the users from the cache
+     */
+    @Override
+    public void backgroundProcess() {
+        if (containerLog.isTraceEnabled()) {
+            containerLog.trace("Cleaning outdated DatabasePricipals");
+        }
+		Iterator<String> iter = userdirectory.keySet().iterator();
+		long current = System.currentTimeMillis();
+		int count = 0;
+		while (iter.hasNext()) {
+			String key = iter.next();
+			DatabaseLoginPrincipal p = userdirectory.get(key);
+			if (current > p.getValidUntil()) {
+				count++;
+				userdirectory.remove(key);
+				try {
+					p.logout();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+		}
+        if (containerLog.isTraceEnabled()) {
+            containerLog.trace("Logout of " + count + " DatabasePricipals during cleanup");
+        }
+	}
+
 	/**
 	 * Create a new realm for the provided database user
 	 * @param username of the db
@@ -73,14 +116,14 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 	 * @return the Tomcat principal
 	 * @throws SQLException in case of an error
 	 */
-	protected abstract Principal createNewPrincipal(String username, String credentials, String jdbcurl) throws SQLException;
+	protected abstract DatabaseLoginPrincipal createNewPrincipal(String username, String credentials, String jdbcurl) throws SQLException;
 	
 	/**
 	 * Actually returns null for security reasons
 	 */
 	@Override
 	protected String getPassword(String username) {
-		return null; // Do not expose the password. What is the side effect of that with md5 digest???
+		return null; // Do not expose the password. The RealmBase methods using this cannot be used anyhow.
 	}
 
 	/**
@@ -89,6 +132,10 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 	 */
 	@Override
 	protected Principal getPrincipal(String username) {
+		return userdirectory.get(username);
+	}
+	
+	protected DatabaseLoginPrincipal getDatabaseLoginPrincipalPrincipal(String username) {
 		return userdirectory.get(username);
 	}
 	

@@ -48,6 +48,14 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 	 * The jdbc driver name used
 	 */
 	private String jdbcdriver;
+	/**
+	 * For subsequent user validations, e.g. basic auth, the provided password and the authenticated password must be compared.
+	 */
+	private String password;
+	/**
+	 * Unix epoch until this login is valid. Before that it can be reused. Important for BASIC auth and the such.
+	 */
+	private long validuntil;
 
 	/**
 	 * @param name database user name
@@ -63,6 +71,8 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 		super(name, queryRoles(name, password, jdbcurl, jdbcdriver, roleSql, processor)); // unfortunately there is no better way than that because of the Tomcat Principal constructor
 		pool = getDataSource(name, password, jdbcurl, jdbcdriver, versionSql, currentuserSql);
 		this.jdbcdriver = jdbcdriver;
+		this.password = password;
+		validuntil = System.currentTimeMillis() + 3600000L;
 	}
 
 	/**
@@ -242,5 +252,20 @@ public abstract class DatabaseLoginPrincipal extends GenericPrincipal implements
 			pool.close();
 		}
 		super.logout();
+	}
+
+	/**
+	 * @return the provided password, which might be a password, a token or any other information related to the auth method
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	public long getValidUntil() {
+		return validuntil;
+	}
+
+	public void setValidUntil(long validuntil) {
+		this.validuntil = validuntil;
 	}
 }
