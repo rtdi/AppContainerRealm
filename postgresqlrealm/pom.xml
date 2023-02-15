@@ -5,7 +5,7 @@
 		<artifactId>appcontainerrealm</artifactId>
 		<version>${revision}</version>
 	</parent>
-	<artifactId>postgresrealm</artifactId>
+	<artifactId>postgresqlrealm</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>

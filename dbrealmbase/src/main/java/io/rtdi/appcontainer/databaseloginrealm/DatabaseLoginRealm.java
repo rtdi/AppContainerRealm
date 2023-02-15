@@ -55,9 +55,11 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 		 * Hence it must be quick.
 		 */
 		DatabaseLoginPrincipal existingprincipal = getDatabaseLoginPrincipalPrincipal(username);
-		String serverCredentials = existingprincipal.getPassword();
-		if (getCredentialHandler().matches(credentials, serverCredentials)) {
-			return existingprincipal;
+		if (existingprincipal != null) {
+			String serverCredentials = existingprincipal.getPassword();
+			if (getCredentialHandler().matches(credentials, serverCredentials)) {
+				return existingprincipal;
+			}
 		}
 		if (jdbcurl == null) {
 			jdbcurl = System.getenv("JDBCURL");

@@ -13,7 +13,7 @@ import io.rtdi.appcontainer.databaseloginrealm.RoleProcessor;
  *
  */
 public class SQLServerPrincipal extends DatabaseLoginPrincipal {
-	private static final long serialVersionUID = 4658263939892656292L;
+	private static final long serialVersionUID = 2639398923292L;
 	public static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	public static final String ROLE_QUERY = "SELECT r.name\r\n"
 			+ "  FROM sys.database_role_members AS m\r\n"
