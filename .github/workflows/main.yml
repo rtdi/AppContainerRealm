@@ -43,7 +43,7 @@ jobs:
           dbrealmbase/target/dbrealmbase.jar
           hanarealm/target/hanarealm.jar
           snowflakerealm/target/snowflakerealm.jar
-          postgresqlrealm/target/postgresrealm.jar
+          postgresqlrealm/target/postgresqlrealm.jar
           mysqlrealm/target/mysqlrealm.jar
           sqlserverrealm/target/sqlserverrealm.jar
     - name: Release Maven package
