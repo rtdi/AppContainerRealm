@@ -73,9 +73,10 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 			userdirectory.put(username, principal);
 			return principal;
 		} catch (SQLException e) {
-            if (containerLog.isTraceEnabled()) {
-                containerLog.trace("failed to login with the provided credentials for \"" + username + "\" with jdbc connection string \"" + jdbcurl + "\" and exception " + e.getMessage());
+            if (log != null && log.isTraceEnabled()) {
+            	log.trace("failed to login with the provided credentials for \"" + username + "\" with jdbc connection string \"" + jdbcurl + "\" and exception " + e.getMessage());
             }
+            log.error(e);
 			return null;
 		}
 	}
@@ -86,8 +87,8 @@ public abstract class DatabaseLoginRealm extends RealmBase {
      */
     @Override
     public void backgroundProcess() {
-        if (containerLog.isTraceEnabled()) {
-            containerLog.trace("Cleaning outdated DatabasePricipals");
+        if (log.isTraceEnabled()) {
+            log.trace("Cleaning outdated DatabasePricipals");
         }
 		Iterator<String> iter = userdirectory.keySet().iterator();
 		long current = System.currentTimeMillis();
@@ -105,8 +106,8 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 				}
 			}
 		}
-        if (containerLog.isTraceEnabled()) {
-            containerLog.trace("Logout of " + count + " DatabasePricipals during cleanup");
+        if (log.isTraceEnabled()) {
+            log.trace("Logout of " + count + " DatabasePricipals during cleanup");
         }
 	}
 
