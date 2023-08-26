@@ -42,6 +42,7 @@ jobs:
         files: |
           dbrealmbase/target/dbrealmbase.jar
           hanarealm/target/hanarealm.jar
+          abaprealm/target/abaprealm.jar
           snowflakerealm/target/snowflakerealm.jar
           postgresqlrealm/target/postgresqlrealm.jar
           mysqlrealm/target/mysqlrealm.jar
