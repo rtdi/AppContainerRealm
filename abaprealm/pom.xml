@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>io.rtdi.sap</groupId>
 			<artifactId>jdbcabap</artifactId>
-			<version>0.2.0</version>
+			<version>0.4.3</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
