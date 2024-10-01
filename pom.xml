@@ -37,7 +37,7 @@
 	</distributionManagement>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<revision>0.9.18</revision>
+		<revision>0.9.19</revision>
 		<tomcatversion>10.1.28</tomcatversion>
 		<log4j.version>2.23.1</log4j.version>
 		<flatten.version>1.6.0</flatten.version>
